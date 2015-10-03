@@ -1,10 +1,13 @@
 # encoding=utf8
 from action import Action
+from io import open
+import re
+import pickle
 
 
 class ActionPickle(Action):
     def run(self):
-        regex_string = unicode(self._config.params["pickle-report"]["regex_extract_list_word"])
+        regex_string = unicode(self._config.params["pickle_report"]["regex_extract_list_word"])
         self._regex_extract_list_word = re.compile(regex_string, re.UNICODE)
         word_lists = {}
         file_list = self._make_file_list()
@@ -14,17 +17,17 @@ class ActionPickle(Action):
             pickle.dump(word_lists, handle)
 
     def _make_file_list(self):
-        number_of_lists = int(self._config.params["pickle-report"]["number_of_lists"])
+        number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
         file_list = {}
         for i in range(1, number_of_lists+1):
             index = unicode(i)
-            filename = self._config.params["pickle-report"]["pattern"].format(index)
-            file_list[index] = self._config.params["pickle-report"]["word_list_folder"] + "/" + filename
+            filename = self._config.params["pickle_report"]["pattern"].format(index)
+            file_list[index] = self._config.params["pickle_report"]["word_list_folder"] + "/" + filename
         return file_list
 
     def _read_file(self, filepath):
         lines = []
-        with open(filepath, encoding=self._config.encoding) as f:
+        with open(filepath, encoding=self._encoding) as f:
             # line is a unicode string, i.e.: u'TEXT 0\n'
             for line in f:
                 words = self._regex_extract_list_word.findall(line)
