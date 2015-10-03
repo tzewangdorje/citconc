@@ -2,7 +2,11 @@
 import re
 from io import open
 import os
+import pickle
+import nltk
+import math
 from action import Action
+
 
 class ActionReport(Action):
     def run(self):
@@ -12,8 +16,8 @@ class ActionReport(Action):
         f = open('report.csv', encoding=self._encoding, mode="w")
         filename = self._config.params["general"]["filename"]
         with open(filename, encoding=self._encoding, mode="r") as concordances:
-            number_of_lists = int(self._config.params["pickle-report"]["number_of_lists"])
-            regex_string = unicode(self._config.params["pickle-report"]["regex_is_word"])
+            number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
+            regex_string = unicode(self._config.params["pickle_report"]["regex_is_word"])
             regex_is_word = re.compile(regex_string, re.UNICODE)
             headers = self._get_report_headers(number_of_lists)
             line = self._make_line(headers)
@@ -38,9 +42,9 @@ class ActionReport(Action):
         return [u"Citation", u"Total", u"Difficulty"] + scores + words
 
     def _make_line(self, parts):
-        if self._config.target == "windows":
+        if self._config.params["general"]["target"] == "windows":
             line_ending = u"\r\n"
-        elif self._config.target == "linux":
+        elif self._config.params["general"]["target"] == "linux":
             line_ending = u"\n"
         else:
             line_ending = os.linesep
@@ -50,7 +54,7 @@ class ActionReport(Action):
         return unicode(line + line_ending)
 
     def _process_report_tokens(self, tokens):
-        exclusions = self._config.params["pickle-report"]["exclusion_tokens"].split(",")
+        exclusions = self._config.params["pickle_report"]["exclusion_tokens"].split(",")
         strip = lambda s:s.replace("'", "").replace("_", "")
         return [strip(t) for t in tokens if t not in exclusions]
 
@@ -80,7 +84,10 @@ class ActionReport(Action):
         return scores, words, total, difficulty
 
     def _get_difficulty(self, total, word_lists):
-        word_number = int(math.ceil(total * float(self._config.pickle_params["difficulty_threshold"])))
+        word_number = int(
+            math.ceil(
+                total * float(
+                    self._config.params["pickle_report"]["difficulty_threshold"])))
         count = 0
         list_number = 0
         for words in word_lists:
