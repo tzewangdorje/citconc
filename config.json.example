@@ -1,0 +1,36 @@
+{
+    "general": {
+        "encoding": "utf-16",
+        "target": "windows",
+        "concordance_mode": "concordance_width",
+        "output": "file",
+        "filename": "output.txt",
+        "citations": 25,
+        "select_citation_method": "top" 
+    },
+    "concordance": {
+        "regex_escape_chars": "?.*$+()[]",
+        "regex_is_char": "[\\w'\\-]",
+        "regex_start_right_concordance": "{0}\\s*{1}\\s*",
+        "regex_start_right_one_token_concordance": "{0}\\s*{1}",
+        "regex_end_left_concordance": "{0}\\s*{1}",
+        "regex_end_right_concordance": "{0}",
+        "regex_other_concordance": "{0}\\s*"
+    },
+    "concordance_width": {
+        "width": 100
+    },
+    "concordance_sentences": {
+        "sentences": 1
+    },
+    "pickle_report": {
+        "word_list_folder": "base_word_lists",
+        "pattern": "basewrd{0}.txt",
+        "number_of_lists": 25,
+        "regex_extract_list_word": "[A-ZÊ]+",
+        "regex_is_word": "a-zA-Z0-9'\\-]+",
+        "exclusion_tokens": "-",
+        "non_possessive_s_token": "it,there,he,she,who,what",
+        "difficulty_threshold": 0.95
+    }
+}
