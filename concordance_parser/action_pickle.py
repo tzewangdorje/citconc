@@ -3,6 +3,7 @@ from action import Action
 from io import open
 import re
 import pickle
+from collections import OrderedDict
 
 
 class ActionPickle(Action):
@@ -18,8 +19,8 @@ class ActionPickle(Action):
 
     def _make_file_list(self):
         number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
-        file_list = {}
-        for i in range(1, number_of_lists+1):
+        file_list = OrderedDict()
+        for i in range(1, number_of_lists + 1):
             index = unicode(i)
             filename = self._config.params["pickle_report"]["pattern"].format(index)
             file_list[index] = self._config.params["pickle_report"]["word_list_folder"] + "/" + filename
