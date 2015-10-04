@@ -1,5 +1,6 @@
 # encoding=utf8
 import re
+import random
 
 
 class Text(object):
