@@ -84,16 +84,14 @@ class ActionReport(Action):
         return scores, words, total, difficulty
 
     def _get_difficulty(self, total, word_lists):
-        word_number = int(
-            math.ceil(
-                total * float(
-                    self._config.params["pickle_report"]["difficulty_threshold"])))
+        threshold_total = total * float(self._config.params["pickle_report"]["difficulty_threshold"])
+        word_number = int(math.ceil(threshold_total))
         count = 0
         list_number = 0
         for words in word_lists:
             list_number += 1
             word_list = words.split()
-            if (count+len(word_list)) >= word_number:
+            if (count + len(word_list)) >= word_number:
                 return list_number
             else:
                 count += len(word_list)
