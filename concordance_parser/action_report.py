@@ -13,9 +13,9 @@ class ActionReport(Action):
         self._word_lists = {}
         with open('word_lists.pickled', 'rb') as handle:
             self._word_lists = pickle.load(handle)
-        f = open('report.csv', encoding=self._encoding, mode="w")
+        f = open('report.csv', mode="wb")
         filename = self._config.params["general"]["filename"]
-        with open(filename, encoding=self._encoding, mode="r") as concordances:
+        with open(filename, mode="rb") as concordances:
             number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
             regex_string = unicode(self._config.params["pickle_report"]["regex_is_word"])
             regex_is_word = re.compile(regex_string, re.UNICODE)
@@ -42,16 +42,10 @@ class ActionReport(Action):
         return [u"Citation", u"Total", u"Difficulty"] + scores + words
 
     def _make_line(self, parts):
-        if self._config.params["general"]["target"] == "windows":
-            line_ending = u"\r\n"
-        elif self._config.params["general"]["target"] == "linux":
-            line_ending = u"\n"
-        else:
-            line_ending = os.linesep
         parts[0] = parts[0].replace(u'"', u'""')
         parts[0] = u'"' + parts[0] + u'"'
         line = u",".join(parts)
-        return unicode(line + line_ending)
+        return unicode(line + os.linesep)
 
     def _process_report_tokens(self, tokens):
         exclusions = self._config.params["pickle_report"]["exclusion_tokens"].split(",")
