@@ -4,6 +4,10 @@ import random
 
 
 class Text(object):
+    _regex_contract_space = None
+    _regex_insert_space1 = None
+    _regex_insert_space2 = None
+
     @classmethod
     def make_regex(cls, regex_string):
         regex_unicode = unicode(regex_string)
@@ -11,12 +15,20 @@ class Text(object):
 
     @classmethod
     def prepare(cls, text):
+        # only compile these regexes once
+        if not cls._regex_contract_space:
+            cls._regex_contract_space = cls.make_regex(u"\\s+")
+        if not cls._regex_insert_space1:
+            cls._regex_insert_space1 = cls.make_regex(u"([a-z\\.])\\.([A-Z])")
+        if not cls._regex_insert_space2:
+            cls._regex_insert_space2 = cls.make_regex(u"(\\w),(\\w)")
         # remove all line endings / carriage returns - Linux and Windows
-        text = text.replace('\n', ' ').replace('\r', '')
+        text = unicode(text)
+        text = text.replace(u'\\n', u' ').replace(u'\\r', u'')
         # if there are any sequences of one or more white space, reduce them to a single space
-        text = re.sub("\s+", " ", text)
-        text = re.sub(r"([a-z\.])\.([A-Z])", r"\1. \2", text)
-        text = re.sub(r"(\w),(\w)", r"\1, \2", text)
+        text = cls._regex_contract_space.sub(u" ", text)
+        text = cls._regex_insert_space1.sub(u"\\1. \\2", text)
+        text = cls._regex_insert_space2.sub(u"\\1, \\2", text)
         return text
 
     @classmethod

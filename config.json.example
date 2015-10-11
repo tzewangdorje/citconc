@@ -3,10 +3,11 @@
         "encoding": "utf-16",
         "target": "windows",
         "concordance_mode": "concordance_width",
-        "output": "file",
         "filename": "output.txt",
         "citations": 25,
-        "select_citation_method": "top" 
+        "select_citation_method": "top",
+        "prepfile": "prepare.txt",
+        "partitions": 10
     },
     "concordance": {
         "regex_escape_chars": "?.*$+()[]",

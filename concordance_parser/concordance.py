@@ -1,34 +1,51 @@
 # encoding=utf8
 import nltk
 import re
+import math
 from collections import defaultdict
 
 
 class Concordance(nltk.text.ConcordanceIndex):
 
-    def __init__(self, tokens, key=lambda x:x, params={}):
+    def __init__(self, tokens, params={}):
         self._tokens = tokens
         self._key = key
         self._offsets = defaultdict(list)
         for index, word in enumerate(tokens):
-            word = self._key(word)
-            self._offsets[word].append(index)
+            self._offsets[word.lower()].append(index)
         self._params = params
         self._regex_is_char = re.compile(unicode(self._params["regex_is_char"]), re.UNICODE)
         self.text = u""
+        self.partitions = []
+        self.partition_misses = 0
 
     @classmethod
     def get_key_func(cls):
         return lambda s:s.lower()
 
+    def load_text(self, text, num_partitions=1):
+        self.text = text
+        self._partition_text(num_partitions)
+
+    def _partition_text(self, num_partitions):
+        size = len(self.text)
+        chunksize = size//num_partitions
+        chunks = range(0, size, chunksize)[:-1]
+        last_chunk = chunks[-1]
+        for pos in chunks:
+            if pos == last_chunk:  # last chunk, so extend to end of the string
+                self.partitions.append(self.text[pos:])
+            else:
+                self.partitions.append(self.text[pos:pos+chunksize])
+
     def _get_escaped_token(self, token):
         for char in self._params["regex_escape_chars"]:
             char = unicode(char)
             token = token.replace(char, u"\\"+char)
-            # http://www.cis.upenn.edu/~treebank/tokenization.html
-            # Treebank tokens replace " with `` and '', we need to reverse this
-            token = re.sub(u"''", u'"', token)
-            token = re.sub(u"``", u'"', token)
+        # http://www.cis.upenn.edu/~treebank/tokenization.html
+        # Treebank tokens replace " with `` and '', we need to reverse this
+        token = token.replace(u"''", u'"')
+        token = token.replace(u"``", u'"')
         return token
 
     def _get_regex_pattern(self, word, tokens, left=True, match_depth=5):
@@ -54,13 +71,32 @@ class Concordance(nltk.text.ConcordanceIndex):
                     self._params["regex_other_concordance"]).format(token_escaped)
         return regex_pattern
 
-    def _get_text(self, regex_pattern):
+    def _get_partial(self, offset, num_tokens):
+        if not self.partitions:
+            return None
+        num_partitions = len(self.partitions)
+        partition_size = num_tokens / num_partitions
+        partition = int(math.ceil(offset/partition_size))
+        return partition
+
+    def _get_text(self, regex_pattern, partial):
         regex_find = re.compile(regex_pattern, re.UNICODE)
-        match = regex_find.search(unicode(self.text))
+        # try doing search against just a part of the text first
+        if partial is None:
+            match = regex_find.search(unicode(self.text))
+        else:
+            match = regex_find.search(unicode(self.partitions[partial]))
         if match:
             return match.group()
         else:
-            return u""
+            # partial search failed
+            # fall back to slow search against the whole of the document now
+            self.partition_misses += 1
+            match = regex_find.search(unicode(self.text))
+            if match:
+                return match.group()
+            else:
+                return u""
 
     def _create_concordance(self, word, citation):
         return {
@@ -68,6 +104,9 @@ class Concordance(nltk.text.ConcordanceIndex):
             "citation": citation,
             "citation_length": len(citation)
         }
+
+    def get_offsets(self, word):
+        return self.offsets(word)
 
     def get_concordances(self, word):
         # implement in child class!
@@ -85,8 +124,8 @@ class Concordance(nltk.text.ConcordanceIndex):
 
 class ConcordanceSentences(Concordance):
 
-    def __init__(self, tokens, key=lambda x:x, params={}):
-        super(ConcordanceSentences, self).__init__(tokens=tokens, key=key, params=params)
+    def __init__(self, tokens, params={}):
+        super(ConcordanceSentences, self).__init__(tokens=tokens, params=params)
 
     def _is_end_sentence_token(self, token):
         return token in [u".", u"!", u"?"]
@@ -129,11 +168,9 @@ class ConcordanceSentences(Concordance):
     def _get_side_sentences(self):
         return (self._params["sentences"] - 1) / 2
 
-    def get_concordances(self, word):
-        offsets = self.offsets(word)
+    def get_concordances(self, word, offsets):
         extra_sentences = self._get_side_sentences()
-
-        concordances = []
+        num_tokens = len(self._tokens)
         if offsets:
             for i in offsets:
                 token = self._tokens[i]
@@ -143,23 +180,24 @@ class ConcordanceSentences(Concordance):
                 regex_pattern_left = self._get_regex_pattern(token, tokens_left, left=True)
                 regex_pattern_right = self._get_regex_pattern(token, tokens_right, left=False)
 
-                match_text_left = self._get_text(regex_pattern_left)
-                match_text_right = self._get_text(regex_pattern_right)
+                partial = self._get_partial(i, num_tokens)
+                match_text_left = self._get_text(regex_pattern_left, partial)
+                match_text_right = self._get_text(regex_pattern_right, partial)
                 slice_left = 0 - (len(token))
                 slice_right = len(token)
                 side_left = match_text_left[:slice_left]
                 side_right = match_text_right[slice_right:]
                 citation = side_left + token + side_right
 
-                concordance = self._create_concordance(word, citation)
-                concordances.append(concordance)
-        return concordances
+                yield self._create_concordance(word, citation)
+        else:
+            return
 
 
 class ConcordanceWidth(Concordance):
 
-    def __init__(self, tokens, key=lambda x:x, params={}):
-        super(ConcordanceWidth, self).__init__(tokens, key, params)
+    def __init__(self, tokens, params={}):
+        super(ConcordanceWidth, self).__init__(tokens, params)
 
     def _get_boundary_left(self, i, context):
         boundary = i - context
@@ -198,12 +236,11 @@ class ConcordanceWidth(Concordance):
             i -= 1
         raise Exception("Could not locate boundary!")
 
-    def get_concordances(self, word):
+    def get_concordances(self, word, offsets):
         width = int(self._params["width"])
         half_width = (width - len(word)) // 2
         context = width // 4  # approx number of words of context
-        offsets = self.offsets(word)
-        concordances = []
+        num_tokens = len(self._tokens)
         if offsets:
             for i in offsets:
                 token = self._tokens[i]
@@ -214,8 +251,9 @@ class ConcordanceWidth(Concordance):
                 regex_pattern_left = self._get_regex_pattern(token, tokens_left)
                 regex_pattern_right = self._get_regex_pattern(token, tokens_right, left=False)
 
-                match_text_left = self._get_text(regex_pattern_left)
-                match_text_right = self._get_text(regex_pattern_right)
+                partial = self._get_partial(i, num_tokens)
+                match_text_left = self._get_text(regex_pattern_left, partial)
+                match_text_right = self._get_text(regex_pattern_right, partial)
                 if match_text_right == u"" or match_text_right == u"":
                     raise Exception("Failed to extract original text with regular expression.")
 
@@ -227,6 +265,6 @@ class ConcordanceWidth(Concordance):
                 break_point_right = self._find_breakpoint_right(side_right, half_width)
                 citation = side_left[break_point_left:] + token + side_right[:break_point_right]
 
-                concordance = self._create_concordance(word, citation)
-                concordances.append(concordance)
-        return concordances
+                yield self._create_concordance(word, citation)
+        else:
+            return

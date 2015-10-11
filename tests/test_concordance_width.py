@@ -24,11 +24,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": " ccc dddd number eeee fff ",
@@ -36,7 +36,11 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len(" ccc dddd number eeee fff ")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
 
     def test_get_concordances_one_match_midword_rollback(self):
         text = u"Aaa bbbb cccc dddd number eeee ffff ggg. Aa bbb cccc ddd."
@@ -50,11 +54,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": " dddd number eeee ",
@@ -62,7 +66,11 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len(" dddd number eeee ")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
 
     def test_get_concordances_one_match_with_punctuation(self):
         text = u"Aaa bbbb, cc dddd number eeee fff. Aa bbb cccc ddd."
@@ -76,11 +84,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": ", cc dddd number eeee fff.",
@@ -88,7 +96,11 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len(", cc dddd number eeee fff.")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
 
     def test_get_concordances_one_match_with_punctuation2(self):
         text = u"Aaa bbbb-ccc dddd number eeee ff. Aa bbb cccc ddd."
@@ -102,11 +114,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": " dddd number eeee ff. ",
@@ -114,7 +126,11 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len(" dddd number eeee ff. ")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
 
     def test_get_concordances_one_match_unicode_midword_rollback(self):
         text = u"Aaa bbbb ÊÊÊÊ dddd number eeee ffff ggg. Aa bbb cccc ddd."
@@ -128,11 +144,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": " dddd number eeee ",
@@ -140,7 +156,11 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len(" dddd number eeee ")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
 
     def test_get_concordances_one_match_width_extends_beyond_end_of_text_right(self):
         text = u"Aaa bbbb ccc dddd number eeee."
@@ -154,11 +174,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": " ccc dddd number eeee.",
@@ -166,7 +186,11 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len(" ccc dddd number eeee.")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
 
     def test_get_concordances_one_match_width_extends_beyond_end_of_text_left(self):
         text = u"Dddd number eeee fff ggg. Aa bbb cccc ddd."
@@ -180,11 +204,11 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
         conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
-        conc.text = text
-        concordances = conc.get_concordances("number")
+        conc.load_text(text)
         success = [
             {
                 "citation": "Dddd number eeee fff ",
@@ -192,4 +216,8 @@ class TestConcordanceWidth(unittest.TestCase):
                 "citation_length":  len("Dddd number eeee fff ")
             }
         ]
-        self.assertTrue(success == concordances)
+        offsets = conc.get_offsets("number")
+        i = 0
+        for concordance in conc.get_concordances("number", offsets):
+            self.assertTrue(success[i] == concordance)
+            i += 1
