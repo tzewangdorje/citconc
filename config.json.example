@@ -28,7 +28,7 @@
         "word_list_folder": "base_word_lists",
         "pattern": "basewrd{0}.txt",
         "number_of_lists": 25,
-        "regex_extract_list_word": "[A-ZÊ]+",
+        "regex_extract_list_word": "[\\w]+",
         "regex_is_word": "[\\w'\\-]+",
         "exclusion_tokens": "-",
         "non_possessive_s_token": "it,there,he,she,who,what",

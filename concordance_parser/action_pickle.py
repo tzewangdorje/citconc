@@ -32,7 +32,7 @@ class ActionPickle(Action):
             # line is a unicode string, i.e.: u'TEXT 0\n'
             for line in f:
                 words = self._regex_extract_list_word.findall(line)
-                if len(words) == 1:
+                if len(words) > 0:
                     word = words[0].lower()
                     lines.append(word)
         return lines
