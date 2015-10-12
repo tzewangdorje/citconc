@@ -9,7 +9,6 @@ class Concordance(nltk.text.ConcordanceIndex):
 
     def __init__(self, tokens, params={}):
         self._tokens = tokens
-        self._key = key
         self._offsets = defaultdict(list)
         for index, word in enumerate(tokens):
             self._offsets[word.lower()].append(index)
@@ -18,10 +17,6 @@ class Concordance(nltk.text.ConcordanceIndex):
         self.text = u""
         self.partitions = []
         self.partition_misses = 0
-
-    @classmethod
-    def get_key_func(cls):
-        return lambda s:s.lower()
 
     def load_text(self, text, num_partitions=1):
         self.text = text
