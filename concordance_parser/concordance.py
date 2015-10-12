@@ -9,6 +9,7 @@ class Concordance(nltk.text.ConcordanceIndex):
 
     def __init__(self, tokens, params={}):
         self._tokens = tokens
+        self._key = lambda s:s.lower()
         self._offsets = defaultdict(list)
         for index, word in enumerate(tokens):
             self._offsets[word.lower()].append(index)
