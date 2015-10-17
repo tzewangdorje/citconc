@@ -15,8 +15,10 @@ class ActionReport(Action):
         out_file_name = self._config.params["general"]["report_output"]
         report = open(out_file_name, mode="wb")
         pickle_file_name = self._config.params["pickle_report"]["pickle_file_name"]
+        print "Reading pickle file..."
         with open(pickle_file_name, 'rb') as handle:
             self._word_lists = pickle.load(handle)
+        print "...DONE"
         in_file_name = self._config.params["general"]["report_input"]
         number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
         regex_string = unicode(self._config.params["pickle_report"]["regex_is_word"])
@@ -25,11 +27,14 @@ class ActionReport(Action):
         line = self._make_line(headers)
         report.write(line)
         concordances = []
+        print "Reading citations..."
         in_file = open(in_file_name, mode="rb")
         for line in in_file:
             concordances.append(line.decode("utf-8"))
         in_file.close()
+        print "...DONE"
         concordances = self._get_citations_list(concordances)
+        print "Concordance processing started..."
         for concordance in concordances:
             concordance = concordance.replace('\n', '').replace('\r', '')
             concordance = re.sub("\s\s+", " ", concordance)
@@ -41,6 +46,7 @@ class ActionReport(Action):
             line = self._make_line(no_line_endings)
             report.write(line)
         report.close()
+        print "...DONE"
 
     def _get_citations_list(self, concordances):
         method = self._config.params["general"]["select_citation_method"]
