@@ -11,37 +11,42 @@ from concordance import Concordance
 class ActionParser(Action):
     def run(self):
         regex_string = self._config.params["pickle_report"]["regex_extract_list_word"]
-        prepfile = self._config.params["general"]["prepfile"]
-        errorsfile = self._config.params["general"]["errorsfile"]
+        prep_file_name = self._config.params["general"]["prepfile"]
+        errors_file_name = self._config.params["general"]["errorsfile"]
         self._regex_extract_list_word = Text.make_regex(regex_string)
         # 1) open files
         print "Reading corpus file..."
         corpus = open(self._config.corpus, mode="rb")
-        errorsfile = open(errorsfile, mode="wb")
+        errors = open(errors_file_name, mode="wb")
         print "...DONE."
-        prepared = open(prepfile, mode="wb")
+        prepared = open(prep_file_name, mode="wb")
         # 2) read, line by line, and write to new "cleaned" file
         text = u""
         print "Preparing corpus..."
         lines_read = 0
+        encoding_errors = 0
         for line in corpus:
             try:
                 text = Text.prepare(line)
             except UnicodeDecodeError as e:
-                errorsfile.write(line)
-                line = text.decode('utf-8', 'ignore').encode('utf-8')
+                encoding_errors += 1
+                errors.write(line)
+                line = line.decode('utf-8', 'ignore').encode('utf-8')
                 text = Text.prepare(line)
             prepared.write(text)
             lines_read += 1
         corpus.close()
         prepared.close()
         print "...{0} lines read...".format(lines_read)
+        print "...{0} encoding errors sent to {1}".format(
+            encoding_errors,
+            errors_file_name)
         print "...DONE."
         # 3) read prepared file and get tokens
         print "Reading prepared corpus..."
-        with open(prepfile, 'rb') as prepared:
+        with open(prep_file_name, 'rb') as prepared:
             text = prepared.read().decode("utf-8")
-        os.remove(prepfile)
+        os.remove(prep_file_name)
         print "...DONE."
         print "Starting tokenization..."
         tokens = nltk.word_tokenize(text)
