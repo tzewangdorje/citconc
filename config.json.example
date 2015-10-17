@@ -7,6 +7,7 @@
         "citations": 25,
         "select_citation_method": "top",
         "prepfile": "prepare.txt",
+        "errorsfile": "encoding_errors.txt",
         "partitions": 10
     },
     "concordance": {

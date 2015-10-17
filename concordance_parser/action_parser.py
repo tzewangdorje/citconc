@@ -12,10 +12,12 @@ class ActionParser(Action):
     def run(self):
         regex_string = self._config.params["pickle_report"]["regex_extract_list_word"]
         prepfile = self._config.params["general"]["prepfile"]
+        errorsfile = self._config.params["general"]["errorsfile"]
         self._regex_extract_list_word = Text.make_regex(regex_string)
         # 1) open files
         print "Reading corpus file..."
-        corpus = open(self._config.corpus, encoding=self._encoding)
+        corpus = open(self._config.corpus, mode="rb")
+        errorsfile = open(errorsfile, mode="wb")
         print "...DONE."
         prepared = open(prepfile, mode="wb")
         # 2) read, line by line, and write to new "cleaned" file
@@ -23,11 +25,14 @@ class ActionParser(Action):
         print "Preparing corpus..."
         lines_read = 0
         for line in corpus:
-            text = Text.prepare(line)
+            try:
+                text = Text.prepare(line)
+            except UnicodeDecodeError as e:
+                errorsfile.write(line)
+                line = text.decode('utf-8', 'ignore').encode('utf-8')
+                text = Text.prepare(line)
             prepared.write(text)
             lines_read += 1
-        # one new line at end of file, other nltk unicdoe tokenisation seems to break
-        # prepared.write(unicode(os.linesep))
         corpus.close()
         prepared.close()
         print "...{0} lines read...".format(lines_read)
