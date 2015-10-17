@@ -5,34 +5,60 @@ import os
 import pickle
 import nltk
 import math
+import random
 from action import Action
 
 
 class ActionReport(Action):
     def run(self):
         self._word_lists = {}
-        with open('word_lists.pickled', 'rb') as handle:
+        out_file_name = self._config.params["general"]["report_output"]
+        report = open(out_file_name, mode="wb")
+        pickle_file_name = self._config.params["pickle_report"]["pickle_file_name"]
+        with open(pickle_file_name, 'rb') as handle:
             self._word_lists = pickle.load(handle)
-        f = open('report.csv', mode="wb")
-        filename = self._config.params["general"]["filename"]
-        with open(filename, mode="rb") as concordances:
-            number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
-            regex_string = unicode(self._config.params["pickle_report"]["regex_is_word"])
-            regex_is_word = re.compile(regex_string, re.UNICODE)
-            headers = self._get_report_headers(number_of_lists)
-            line = self._make_line(headers)
-            f.write(line)
-            for concordance in concordances:
-                concordance = concordance.replace('\n', '').replace('\r', '')
-                concordance = re.sub("\s\s+", " ", concordance)
-                tokens = [token for token in nltk.word_tokenize(concordance) if regex_is_word.findall(token) != []]
-                tokens = self._process_report_tokens(tokens)
-                scores, words, total, difficulty = self._get_scores(tokens, number_of_lists)
-                fields = [concordance, total, difficulty] + scores + words
-                no_line_endings = [unicode(field).rstrip() for field in fields]
-                line = self._make_line(no_line_endings)
-                f.write(line)
-        f.close()
+        in_file_name = self._config.params["general"]["report_input"]
+        number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
+        regex_string = unicode(self._config.params["pickle_report"]["regex_is_word"])
+        regex_is_word = re.compile(regex_string, re.UNICODE)
+        headers = self._get_report_headers(number_of_lists)
+        line = self._make_line(headers)
+        report.write(line)
+        concordances = []
+        in_file = open(in_file_name, mode="rb")
+        for line in in_file:
+            concordances.append(line.decode("utf-8"))
+        in_file.close()
+        concordances = self._get_citations_list(concordances)
+        for concordance in concordances:
+            concordance = concordance.replace('\n', '').replace('\r', '')
+            concordance = re.sub("\s\s+", " ", concordance)
+            tokens = [token for token in nltk.word_tokenize(concordance) if regex_is_word.findall(token) != []]
+            tokens = self._process_report_tokens(tokens)
+            scores, words, total, difficulty = self._get_scores(tokens, number_of_lists)
+            fields = [concordance, total, difficulty] + scores + words
+            no_line_endings = [unicode(field).rstrip() for field in fields]
+            line = self._make_line(no_line_endings)
+            report.write(line)
+        report.close()
+
+    def _get_citations_list(self, concordances):
+        method = self._config.params["general"]["select_citation_method"]
+        if method == "all":
+            return concordances
+        num_citations = int(self._config.params["general"]["citations"])
+        if method == "random":
+            selection = []
+            limit = min(num_citations, len(concordances))
+            for i in range(0, limit):
+                selection.append(random.choice(concordances))
+            return selection
+        elif method == "bottom":
+            slice_index = 0 - num_citations
+            return concordances[slice_index:]
+        else:
+            # assume must be top
+            return concordances[0:num_citations]
 
     def _get_report_headers(self, number_of_lists):
         scores = [u"Score" + unicode(i+1) for i in range(0, number_of_lists)]
@@ -49,6 +75,7 @@ class ActionReport(Action):
 
     def _process_report_tokens(self, tokens):
         exclusions = self._config.params["pickle_report"]["exclusion_tokens"].split(",")
+        exclusions = [unicode(e) for e in exclusions]
         strip = lambda s:s.replace("'", "").replace("_", "")
         return [strip(t) for t in tokens if t not in exclusions]
 

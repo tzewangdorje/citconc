@@ -3,7 +3,9 @@
         "encoding": "utf-16",
         "target": "windows",
         "concordance_mode": "concordance_width",
-        "filename": "output.txt",
+        "parser_output": "output.txt",
+        "report_input": "output.txt",
+        "report_output": "report.csv",
         "citations": 25,
         "select_citation_method": "top",
         "prepfile": "prepare.txt",
@@ -26,6 +28,7 @@
         "sentences": 1
     },
     "pickle_report": {
+        "pickle_file_name": "word_lists.pickled",
         "word_list_folder": "base_word_lists",
         "pattern": "basewrd{0}.txt",
         "number_of_lists": 25,

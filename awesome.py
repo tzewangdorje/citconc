@@ -2,9 +2,9 @@
 """Awesome Parser.
 
 Usage:
-  awesome.py concordance --corpus=<corpus> --word=<word> [--output=<output>] [--config=<config>] [--filename=<filename>]
+  awesome.py concordance --corpus=<corpus> --word=<word> [--config=<config>] [--output=<output>]
   awesome.py pickle [--config=<config>]
-  awesome.py report [--config=<config>] [--filename=<filename>]
+  awesome.py report [--config=<config>] [--input=<input>] [--output=<output>]
 
 Options:
   -h --help                  Show this screen.
@@ -12,8 +12,8 @@ Options:
   --corpus=<corpuis>         The corpus of text to be read from file by the program.
   --word=<word>              The word to find concordances for.
   --config=<config>          Optional path to the json confile file [default: config.json].
-  --filename=<filename>      Optional filename to write output to [default: output.txt].
-
+  --input=<input>            Optional filename to use as the input for the report.
+  --output=<output>          Optional filename to write the output to.
 
 """
 from docopt import docopt

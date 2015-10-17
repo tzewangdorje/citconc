@@ -78,11 +78,12 @@ class ActionParser(Action):
         print "...{0} offsets found".format(len(offsets))
         print "...DONE."
         print "Generating concordances..."
-        with open(self._config.params["general"]["filename"], mode="wb") as f:
+        out_file_name = self._config.params["general"]["parser_output"]
+        with open(out_file_name, mode="wb") as out_file:
             num_concordances = 0
             for concordance in conc.get_concordances(self._config.word, offsets):
                 num_concordances += 1
-                f.write(unicode(concordance["citation"]) + unicode(os.linesep))
+                out_file.write(unicode(concordance["citation"]) + unicode(os.linesep))
         print "...{0} concordances found".format(num_concordances)
         if conc.partition_misses:
             misses = 100 / ((num_concordances * 2) / conc.partition_misses)
@@ -90,4 +91,4 @@ class ActionParser(Action):
             misses = 0.0
         print "...there were {0}% partition misses".format(misses)
         print "...DONE."
-        print "Output to file '{0}' complete.".format(self._config.params["general"]["filename"])
+        print "Output to file '{0}' complete.".format(out_file_name)
