@@ -89,14 +89,22 @@ class ActionReport(Action):
         scores = [0] * (number_of_lists+1)
         words = [u""] * (number_of_lists+1)
         for token in tokens:
+            # convert to unicode
+            try:
+                token = unicode(token, errors='replace')
+            except TypeError:
+                pass  # catch and move on if we get: "TypeError: decoding Unicode is not supported"
             matched = False
+            # check for numeric difficulty one
+            if token.isdecimal():
+                    scores[0] += 1
+                    words[0] += (token + u" ")
+                    matched = True
+                    continue
+            # look for a match in a word list
             for i in range(0, number_of_lists):
                 index = unicode(i + 1)
                 lowered = token.lower()
-                try:
-                    lowered = unicode(lowered, errors='replace')
-                except:
-                    pass
                 if lowered in self._word_lists[index]:
                     scores[i] += 1
                     words[i] += (lowered + u" ")
