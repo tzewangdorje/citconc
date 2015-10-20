@@ -30,6 +30,7 @@
     "pickle_report": {
         "pickle_file_name": "word_lists.pickled",
         "word_list_folder": "base_word_lists",
+        "proper_noun_file": "properNouns.txt",
         "pattern": "basewrd{0}.txt",
         "number_of_lists": 25,
         "regex_extract_list_word": "[\\w]+",

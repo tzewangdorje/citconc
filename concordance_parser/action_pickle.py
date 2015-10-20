@@ -14,6 +14,11 @@ class ActionPickle(Action):
         file_list = self._make_file_list()
         for (idx, f) in file_list.items():
             word_lists[idx] = self._read_file(f)
+        # add the proper noun list
+        f = "{0}/{1}".format(
+            self._config.params["pickle_report"]["word_list_folder"],
+            self._config.params["pickle_report"]["proper_noun_file"])
+        word_lists["proper"] = self._read_file(f)
         with open("word_lists.pickled", 'wb') as handle:
             pickle.dump(word_lists, handle)
 

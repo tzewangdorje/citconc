@@ -69,8 +69,10 @@ class ActionReport(Action):
     def _get_report_headers(self, number_of_lists):
         scores = [u"Score" + unicode(i+1) for i in range(0, number_of_lists)]
         scores += [u"Other"]
+        scores += [u"Proper Nouns"]
         words = [u"Word" + unicode(i+1) for i in range(0, number_of_lists)]
         words += [u"Other"]
+        words += [u"Proper Nouns"]
         return [u"Citation", u"Total", u"Difficulty"] + scores + words
 
     def _make_line(self, parts):
@@ -85,37 +87,51 @@ class ActionReport(Action):
         strip = lambda s:s.replace("'", "").replace("_", "")
         return [strip(t) for t in tokens if t not in exclusions]
 
+    def _parse_token(self, token):
+        # convert to unicode
+        try:
+            token = unicode(token, errors='replace')
+        except TypeError:
+            pass  # catch and move on if we get: "TypeError: decoding Unicode is not supported"
+        return token, token.lower()
+
     def _get_scores(self, tokens, number_of_lists):
-        scores = [0] * (number_of_lists+1)
-        words = [u""] * (number_of_lists+1)
+        scores = [0] * (number_of_lists + 2)  # +2 is extra "other" + "proper noun" columns
+        words = [u""] * (number_of_lists + 2)
         for token in tokens:
-            # convert to unicode
-            try:
-                token = unicode(token, errors='replace')
-            except TypeError:
-                pass  # catch and move on if we get: "TypeError: decoding Unicode is not supported"
+            proper_noun = False
             matched = False
+            token, lowered = self._parse_token(token)
             # check for numeric difficulty one
             if token.isdecimal():
                     scores[0] += 1
                     words[0] += (token + u" ")
                     matched = True
                     continue
-            # look for a match in a word list
+            # check for proper nouns
+            if lowered in self._word_lists[u"proper"]:
+                proper_noun = True
+                if token.istitle():  # Upper case proper noun can be handled right away
+                    scores[number_of_lists + 1] += 1
+                    words[number_of_lists + 1] += (lowered + u" ")
+                    continue
+            # look for a match in one of the word lists
             for i in range(0, number_of_lists):
                 index = unicode(i + 1)
-                lowered = token.lower()
-                if lowered in self._word_lists[index]:
+                if lowered in self._word_lists[index]:  # lower case word list match
                     scores[i] += 1
                     words[i] += (lowered + u" ")
                     matched = True
                     break
-            if not matched:
-                # it wasn't in the word lists, so add it to "other"
+            if not matched and (proper_noun or token.istitle()):
+                scores[number_of_lists + 1] += 1
+                words[number_of_lists + 1] += (lowered + u" ")
+            elif not matched:
+                # it wasn't in the word lists, it's not a proper noun, so add it to "other"
                 scores[number_of_lists] += 1
                 words[number_of_lists] += (lowered + u" ")
-        total = sum(scores)
-        difficulty = self._get_difficulty(total, words)
+        total = sum(scores[:-1])
+        difficulty = self._get_difficulty(total, words[:-1])
         return scores, words, total, difficulty
 
     def _get_difficulty(self, total, word_lists):
