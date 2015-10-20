@@ -38,7 +38,9 @@ class ActionReport(Action):
         for concordance in concordances:
             concordance = concordance.replace('\n', '').replace('\r', '')
             concordance = re.sub("\s\s+", " ", concordance)
-            tokens = [token for token in nltk.word_tokenize(concordance) if regex_is_word.findall(token) != []]
+            cleaned = concordance.replace(u"\u2018", "``")
+            cleaned = cleaned.replace(u"\u2019", "''")
+            tokens = [token for token in nltk.word_tokenize(cleaned) if regex_is_word.findall(token) != []]
             tokens = self._process_report_tokens(tokens)
             scores, words, total, difficulty = self._get_scores(tokens, number_of_lists)
             fields = [concordance, total, difficulty] + scores + words
