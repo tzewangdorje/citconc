@@ -21,7 +21,10 @@ class Concordance(nltk.text.ConcordanceIndex):
 
     def load_text(self, text, num_partitions=1):
         self.text = text
-        self._partition_text(num_partitions)
+        if num_partitions == 1:
+            self.partitions.append(self.text)
+        else:
+            self._partition_text(num_partitions)
 
     def _partition_text(self, num_partitions):
         size = len(self.text)

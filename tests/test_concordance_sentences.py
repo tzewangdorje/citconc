@@ -24,9 +24,10 @@ class TestConcordanceSentences(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
-        conc = ConcordanceSentences(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceSentences(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -68,9 +69,10 @@ class TestConcordanceSentences(unittest.TestCase):
             "regex_start_right_one_token_concordance": "{0}\\s*{1}",
             "regex_end_left_concordance": "{0}\\s*{1}",
             "regex_end_right_concordance": "{0}",
-            "regex_other_concordance": "{0}\\s*"
+            "regex_other_concordance": "{0}\\s*",
+            "partitons": 1
         }
-        conc = ConcordanceSentences(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceSentences(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {

@@ -27,7 +27,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -57,7 +57,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -87,7 +87,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -117,7 +117,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -147,7 +147,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -177,7 +177,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
@@ -207,7 +207,7 @@ class TestConcordanceWidth(unittest.TestCase):
             "regex_other_concordance": "{0}\\s*",
             "partitons": 1
         }
-        conc = ConcordanceWidth(tokens=tokens, key=Concordance.get_key_func(), params=params)
+        conc = ConcordanceWidth(tokens=tokens, params=params)
         conc.load_text(text)
         success = [
             {
