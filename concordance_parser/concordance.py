@@ -253,8 +253,12 @@ class ConcordanceWidth(Concordance):
                 partial = self._get_partial(i, num_tokens)
                 match_text_left = self._get_text(regex_pattern_left, partial)
                 match_text_right = self._get_text(regex_pattern_right, partial)
-                if match_text_right == u"" or match_text_right == u"":
-                    raise Exception("Failed to extract original text with regular expression.")
+                if match_text_left == u"":
+                    raise Exception(
+                        "Failed to extract original text with regular expression: " + regex_pattern_left)
+                if match_text_right == u"":
+                    raise Exception(
+                        "Failed to extract original text with regular expression: " + regex_pattern_right)
 
                 slice_left = 0 - (len(token))
                 slice_right = len(token)
