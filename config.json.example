@@ -13,7 +13,7 @@
         "partitions": 10
     },
     "concordance": {
-        "regex_escape_chars": "?.*$+()[]",
+        "regex_escape_chars": "?.*$+()[]^|",
         "regex_is_char": "[\\w'\\-]",
         "regex_start_right_concordance": "{0}\\s*{1}\\s*",
         "regex_start_right_one_token_concordance": "{0}\\s*{1}",
@@ -34,9 +34,7 @@
         "pattern": "basewrd{0}.txt",
         "number_of_lists": 25,
         "regex_extract_list_word": "[\\w]+",
-        "regex_is_word": "[\\w'\\-]+",
-        "exclusion_tokens": "-",
-        "non_possessive_s_token": "it,there,he,she,who,what",
+        "regex_is_word": "^(?=([^']*[\\w]')?[^\\W]+$).{1,}$",
         "difficulty_threshold": 0.95
     }
 }
