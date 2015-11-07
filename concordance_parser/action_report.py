@@ -1,10 +1,7 @@
 # encoding=utf8
-import re
 from io import open
 import os
 import pickle
-import nltk
-import math
 import random
 from action import Action
 from report import Report
@@ -16,15 +13,12 @@ class ActionReport(Action):
         out_file_name = self._config.params["general"]["report_output"]
         report = open(out_file_name, mode="wb")
         pickle_file_name = self._config.params["pickle_report"]["pickle_file_name"]
-        difficulty_threshold = self._config.params["pickle_report"]["difficulty_threshold"]
         print "Reading pickle file..."
         with open(pickle_file_name, 'rb') as handle:
             self._word_lists = pickle.load(handle)
         print "...DONE"
         in_file_name = self._config.params["general"]["report_input"]
         number_of_lists = int(self._config.params["pickle_report"]["number_of_lists"])
-        regex_string = unicode(self._config.params["pickle_report"]["regex_is_word"])
-        regex_is_word = re.compile(regex_string, re.UNICODE)
         headers = self._get_report_headers(number_of_lists)
         line = self._make_line(headers)
         report.write(line)
@@ -38,16 +32,10 @@ class ActionReport(Action):
         concordances = self._get_citations_list(concordances)
         print "Concordance processing started..."
         for concordance in concordances:
-            concordance = concordance.replace('\n', '').replace('\r', '')
-            concordance = re.sub("\s\s+", " ", concordance)
-            cleaned = concordance.replace(u"\u2018", "``")
-            cleaned = cleaned.replace(u"\u2019", "''")
-            tokens = [token for token in nltk.word_tokenize(cleaned) if regex_is_word.findall(token) != []]
             scores, words, total, difficulty = Report.get_scores(
-                tokens,
-                number_of_lists,
+                concordance,
                 self._word_lists,
-                difficulty_threshold)
+                self._config)
             fields = [concordance, total, difficulty] + scores + words
             no_line_endings = [unicode(field).rstrip() for field in fields]
             line = self._make_line(no_line_endings)

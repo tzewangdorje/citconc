@@ -1,5 +1,7 @@
 # encoding=utf8
 import math
+import nltk
+import re
 
 
 class Report(object):
@@ -14,7 +16,28 @@ class Report(object):
         return token, token.lower()
 
     @classmethod
-    def get_scores(cls, tokens, number_of_lists, word_lists, difficulty_threshold):
+    def _get_params(cls, config):
+        number_of_lists = int(config.params["pickle_report"]["number_of_lists"])
+        difficulty_threshold = config.params["pickle_report"]["difficulty_threshold"]
+        regex_string = unicode(config.params["pickle_report"]["regex_is_word"])
+        regex_is_word = re.compile(regex_string, re.UNICODE)
+        return number_of_lists, difficulty_threshold, regex_is_word
+
+    @classmethod
+    def _clean(cls, concordance):
+        concordance = concordance.replace('\n', '').replace('\r', '')
+        concordance = re.sub("\s\s+", " ", concordance)
+        concordance = concordance.replace(u"\u2018", '"')
+        return concordance.replace(u"\u2019", '"')
+
+    @classmethod
+    def get_scores(cls, concordance, word_lists, config):
+        number_of_lists, difficulty_threshold, regex_is_word = cls._get_params(config)
+        concordance = cls._clean(concordance)
+        # split hyphenated tokens into two
+        tokens = [part for token in nltk.word_tokenize(concordance) for part in token.split("-") if part]
+        # remove non-word tokens
+        tokens = [token for token in tokens if regex_is_word.findall(token) != []]
         scores = [0] * (number_of_lists + 2)  # +2 is extra "other" + "proper noun" columns
         words = [u""] * (number_of_lists + 2)
         for token in tokens:
