@@ -33,7 +33,7 @@
         "proper_noun_file": "properNouns.txt",
         "pattern": "basewrd{0}.txt",
         "number_of_lists": 25,
-        "regex_extract_list_word": "[\\w]+",
+        "regex_extract_list_word": "[\\w']+",
         "regex_is_word": "^(?=([^']*[\\w]')?[^\\W]+$).{1,}$",
         "difficulty_threshold": 0.95
     }
