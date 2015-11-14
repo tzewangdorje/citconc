@@ -10,7 +10,8 @@
         "select_citation_method": "top",
         "prepfile": "prepare.txt",
         "errorsfile": "encoding_errors.txt",
-        "partitions": 10
+        "partitions": 10,
+        "citation_format": "{0}"
     },
     "concordance": {
         "regex_escape_chars": "?.*$+()[]^|",

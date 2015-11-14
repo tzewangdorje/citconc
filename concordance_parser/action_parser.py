@@ -83,6 +83,7 @@ class ActionParser(Action):
             num_concordances = 0
             for concordance in conc.get_concordances(self._config.word, offsets):
                 num_concordances += 1
+                concordance["citation"] = self._config.params["general"]["citation_format"].format(concordance["citation"])
                 out_file.write(unicode(concordance["citation"]) + unicode(os.linesep))
         print "...{0} concordances found".format(num_concordances)
         if conc.partition_misses:
