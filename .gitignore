@@ -61,4 +61,6 @@ base_word_lists/*
 *.txt
 *.csv
 word_lists.pickled
-config.ini
+config.json
+.idea/*
+env2/*
