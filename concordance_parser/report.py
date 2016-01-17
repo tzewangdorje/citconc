@@ -47,7 +47,7 @@ class Report(object):
             matched = False
             token, lowered = cls._parse_token(token)
             # check for numeric difficulty one
-            if token.isdecimal():
+            if token.isdecimal() or cls._has_numeric_digit(token):
                     scores[0] += 1
                     words[0] += (token + u" ")
                     matched = True
@@ -91,3 +91,7 @@ class Report(object):
                 return list_number
             else:
                 count += len(word_list)
+
+    @classmethod
+    def _has_numeric_digit(cls, token):
+        return any(char.isdigit() for char in token)
