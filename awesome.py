@@ -4,7 +4,7 @@
 Usage:
   awesome.py concordance --corpus=<corpus> --word=<word> [--config=<config>] [--output=<output>]
   awesome.py pickle [--config=<config>]
-  awesome.py report [--config=<config>] [--input=<input>] [--output=<output>]
+  awesome.py report [--config=<config>] [--input=<input>] [--output=<output>] [--word=<word>]
 
 Options:
   -h --help                  Show this screen.

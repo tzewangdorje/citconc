@@ -41,6 +41,8 @@ class Report(object):
         scores = [0] * (number_of_lists + 2)  # +2 is extra "other" + "proper noun" columns
         words = [u""] * (number_of_lists + 2)
         for token in tokens:
+            if token == config.word:
+                continue  # don't include the search term if it has been passed to the report
             proper_noun = False
             matched = False
             token, lowered = cls._parse_token(token)
